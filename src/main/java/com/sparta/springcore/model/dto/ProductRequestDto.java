@@ -1,10 +1,14 @@
-package com.sparta.springcore.domain;
+package com.sparta.springcore.model.dto;
+
+
 import lombok.Getter;
 
 @Getter
-public class ItemDto {
+public class ProductRequestDto {
+
     private String title;
     private String link;
     private String image;
     private int lprice;
+
 }

@@ -3,7 +3,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.springcore.domain.ItemDto;
+import com.sparta.springcore.model.dto.SignupRequestDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -43,8 +43,8 @@ public class ItemSearchServlet extends HttpServlet {
         ObjectMapper objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         JsonNode itemsNode = objectMapper.readTree(naverApiResponseJson).get("items");
-        List<ItemDto> itemDtoList = objectMapper
-                .readerFor(new TypeReference<List<ItemDto>>() {})
+        List<SignupRequestDto.ItemDto> itemDtoList = objectMapper
+                .readerFor(new TypeReference<List<SignupRequestDto.ItemDto>>() {})
                 .readValue(itemsNode);
 
 // 5. API Response 보내기

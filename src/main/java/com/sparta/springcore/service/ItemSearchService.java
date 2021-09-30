@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sparta.springcore.domain.ItemDto;
+import com.sparta.springcore.model.dto.SignupRequestDto;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 public class ItemSearchService {
-    public List<ItemDto> getIems(String query) throws IOException {
+    public List<SignupRequestDto.ItemDto> getIems(String query) throws IOException {
         // 네이버 쇼핑 API 호출에 필요한 Header, Body 정리
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -35,8 +35,8 @@ public class ItemSearchService {
         ObjectMapper objectMapper = new ObjectMapper()
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         JsonNode itemsNode = objectMapper.readTree(naverApiResponseJson).get("items");
-        List<ItemDto> itemDtoList = objectMapper
-                .readerFor(new TypeReference<List<ItemDto>>() {})
+        List<SignupRequestDto.ItemDto> itemDtoList = objectMapper
+                .readerFor(new TypeReference<List<SignupRequestDto.ItemDto>>() {})
                 .readValue(itemsNode);
 
         return itemDtoList;

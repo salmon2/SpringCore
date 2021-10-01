@@ -17,7 +17,7 @@ import java.util.List;
 
 @Service
 public class ItemSearchService {
-    public List<SignupRequestDto.ItemDto> getIems(String query) throws IOException {
+    public List<SignupRequestDto.ItemDto> getItems(String query) throws IOException {
         // 네이버 쇼핑 API 호출에 필요한 Header, Body 정리
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
@@ -41,4 +41,5 @@ public class ItemSearchService {
 
         return itemDtoList;
     }
+
 }

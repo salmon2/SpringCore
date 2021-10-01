@@ -18,7 +18,7 @@ public class ItemSearchController {
     @GetMapping("/api/search")
     @ResponseBody
     public List<SignupRequestDto.ItemDto> getItems(@RequestParam String query) throws IOException {
-        List<SignupRequestDto.ItemDto> itemDtoList = itemSearchService.getIems(query);
+        List<SignupRequestDto.ItemDto> itemDtoList = itemSearchService.getItems(query);
 
         return itemDtoList;
     }

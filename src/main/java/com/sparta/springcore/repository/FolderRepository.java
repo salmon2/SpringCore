@@ -1,7 +1,10 @@
 package com.sparta.springcore.repository;
 
 import com.sparta.springcore.model.Folder;
+import com.sparta.springcore.model.Product;
 import com.sparta.springcore.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

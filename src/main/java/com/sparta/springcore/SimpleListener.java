@@ -1,4 +1,4 @@
-package com.sparta.springcore.testdata;
+package com.sparta.springcore;
 
 import com.sparta.springcore.model.Product;
 import com.sparta.springcore.model.User;
@@ -8,11 +8,17 @@ import com.sparta.springcore.repository.ProductRepository;
 import com.sparta.springcore.repository.UserRepository;
 import com.sparta.springcore.service.ItemSearchService;
 import com.sparta.springcore.service.UserService;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.ApplicationArguments;
-import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.context.event.ApplicationStartedEvent;
+import org.springframework.context.ApplicationListener;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,8 +26,12 @@ import java.util.List;
 
 import static com.sparta.springcore.service.ProductService.MIN_MY_PRICE;
 
+@NoArgsConstructor
 @Component
-class TestDataRunner implements ApplicationRunner {
+public class SimpleListener implements ApplicationListener<ApplicationStartedEvent> {
+
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Autowired
     UserService userService;
@@ -38,14 +48,19 @@ class TestDataRunner implements ApplicationRunner {
     @Autowired
     ItemSearchService itemSearchService;
 
+    @SneakyThrows
     @Override
-    public void run(ApplicationArguments args) throws Exception {
-// 테스트 User 생성
+    public void onApplicationEvent(ApplicationStartedEvent event) {
+        EntityManager em = entityManagerFactory.createEntityManager();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+
+        // 테스트 User 생성
         User testUser = new User("슈가", passwordEncoder.encode("123"), "sugar@sparta.com", UserRoleEnum.USER);
         testUser = userRepository.save(testUser);
 
-// 테스트 User 의 관심상품 등록
-// 검색어 당 관심상품 10개 등록
+        // 테스트 User 의 관심상품 등록
+        // 검색어 당 관심상품 10개 등록
         createTestData(testUser, "신발");
         createTestData(testUser, "과자");
         createTestData(testUser, "키보드");
@@ -57,6 +72,11 @@ class TestDataRunner implements ApplicationRunner {
         createTestData(testUser, "노트북");
         createTestData(testUser, "무선 이어폰");
         createTestData(testUser, "모니터");
+
+
+
+
+        em.getTransaction().commit();
     }
 
     private void createTestData(User user, String searchWord) throws IOException {

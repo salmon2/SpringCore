@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class ProductController {
 
     private final ProductService productService;
-    private final ApiUseTimeRepository apiUseTimeRepository;
 
 
     // 신규 상품 등록
@@ -26,8 +25,6 @@ public class ProductController {
     public Product createProduct(@RequestBody ProductRequestDto requestDto,
                                  @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-        long startTime = System.currentTimeMillis();
-        try{
             // 로그인 되어 있는 회원 테이블의 ID
             Long userId = userDetails.getUser().getId();
 
@@ -35,27 +32,9 @@ public class ProductController {
 
             // 응답 보내기
             return product;
-        }
-        finally {
-            long endTime = System.currentTimeMillis();
-            long runTime =  endTime - startTime;
 
-            System.out.println("runTime = " + runTime);
-
-            User user = userDetails.getUser();
-            ApiUseTime apiUseTime = apiUseTimeRepository.findByUser(user).orElse(null);
-
-            if(apiUseTime == null){
-                apiUseTime = new ApiUseTime(user, runTime);
-            }else{
-                apiUseTime.addUseTime(runTime);
-            }
-
-            apiUseTimeRepository.save(apiUseTime);
-            System.out.println("user.getUsername() = " + user.getUsername());
-            System.out.println("apiUseTime = " + apiUseTime.getTotalTime());
-        }
     }
+
 
     // 설정 가격 변경
     @PutMapping("/api/products/{id}")

@@ -1,9 +1,13 @@
 package com.sparta.springcore.service;
 
+import com.sparta.springcore.model.Folder;
 import com.sparta.springcore.model.Product;
 import com.sparta.springcore.model.ProductMypriceRequestDto;
+import com.sparta.springcore.model.User;
 import com.sparta.springcore.model.dto.ProductRequestDto;
+import com.sparta.springcore.repository.FolderRepository;
 import com.sparta.springcore.repository.ProductRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +17,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import javax.transaction.Transactional;
+
+
 @Service
+@RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final FolderRepository folderRepository;
+
     public static final int MIN_MY_PRICE = 100;
 
-    @Autowired
-    public ProductService(ProductRepository productRepository) {
-        this.productRepository = productRepository;
-    }
+
 
     public Product createProduct(ProductRequestDto requestDto, Long userId ) {
 // 요청받은 DTO 로 DB에 저장할 객체 만들기
@@ -65,5 +72,26 @@ public class ProductService {
 
         return productRepository.findAll(pageable);
     }
-}
 
+    @Transactional
+    public Product addFolder(Long productId, Long folderId, User user) {
+// 1) 상품을 조회합니다.
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new NullPointerException("해당 상품 아이디가 존재하지 않습니다."));
+
+// 2) 관심상품을 조회합니다.
+        Folder folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new NullPointerException("해당 폴더 아이디가 존재하지 않습니다."));
+
+// 3) 조회한 폴더와 관심상품이 모두 로그인한 회원의 소유인지 확인합니다.
+        Long loginUserId = user.getId();
+        if (!product.getUserId().equals(loginUserId) || !folder.getUser().getId().equals(loginUserId)) {
+            throw new IllegalArgumentException("회원님의 관심상품이 아니거나, 회원님의 폴더가 아닙니다~^^");
+        }
+
+// 4) 상품에 폴더를 추가합니다.
+        product.addFolder(folder);
+
+        return product;
+    }
+}

@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 
+import java.util.List;
+
 import static com.sparta.springcore.validator.ProductValidator.ValidateProductInput;
 
 @Setter
@@ -38,6 +40,9 @@ public class Product {
     @Column(nullable = false)
     private Long userId;
 
+    @ManyToMany
+    private List<Folder> folderList;
+
     // 관심 상품 생성 시 이용합니다.
     public Product(ProductRequestDto requestDto, Long userId) {
         // 입력값 Validation
@@ -53,4 +58,7 @@ public class Product {
     }
 
 
+    public void addFolder(Folder folder) {
+        this.folderList.add(folder);
+    }
 }
